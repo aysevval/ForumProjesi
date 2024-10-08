@@ -15,6 +15,15 @@
         .container .title-label {
             text-align: center;
         }
+        .error-message {
+            margin-top: 10px;
+            padding: 10px;
+            color: #D8000C;
+            background-color: #FFBABA;
+            border: 1px solid #D8000C;  
+            border-radius: 5px;
+        }
+        
     </style>
 </head>
 <body>
@@ -68,6 +77,11 @@
                 </div>
                 
                 <div class="file-upload">
+                    {{if .Error}}
+                    <div class="error-message">
+                        {{.Error}}
+                    </div>
+                    {{end}}
                     <label for="file" class="title-label">Upload Image:</label>
                     <input type="file" id="file" name="file">
                     <button type="submit" class="button">Post</button>

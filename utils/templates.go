@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -23,4 +24,5 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	buffer.WriteTo(w) // Only write to the ResponseWriter if there were no errors
+	fmt.Println(buffer)
 }

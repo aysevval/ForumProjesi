@@ -47,13 +47,12 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		utils.RenderTemplate(w, "templates/uploadForm.html", nil)
 		return
 	}
-
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	r.ParseMultipartForm(10 << 20) // 10 MB limit
+	r.ParseMultipartForm(20 << 20) // 20 MB limit
 
 	title := r.FormValue("title")
 	content := r.FormValue("content")
@@ -63,6 +62,19 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	var filePath string
 	if err == nil { // Dosya seçilmişse işlemleri yap
 		defer file.Close()
+
+		//Dosya boyutunu kontrol etmek için
+		if handler.Size > 20*1024*1024 {
+			http.Error(w, "File is too big, please enter 2mb", http.StatusBadRequest)
+			return
+		}
+
+		//Dosya türünü kontrol et
+		fileExt := strings.ToLower(filepath.Ext(handler.Filename))
+		if fileExt != ".jpeg" && fileExt != ".jpg" && fileExt != ".png" && fileExt != ".gif" {
+			http.Error(w, "Invalid file type only jpeg, jpg, png, gif ", http.StatusBadRequest)
+			return
+		}
 
 		uploadDir := "./uploads"
 		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
@@ -81,7 +93,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error writing file: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		// filePath = "/" + filePath
+
 	} else {
 		// Dosya seçilmemişse varsayılan resim yolunu kullan
 		filePath = "static/images/defult-image.png.jpg" // Varsayılan resim yolunu buraya ekleyin
